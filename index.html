@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Berita Acara Digital - Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        @media (max-width: 768px) {
+            .desktop-table { display: none; }
+            .mobile-cards { display: block; }
+        }
+        @media (min-width: 769px) {
+            .desktop-table { display: table; }
+            .mobile-cards { display: none; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen pb-12">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 glass border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-2">
+                    <div class="bg-indigo-600 p-2 rounded-lg text-white">
+                        <i data-lucide="file-text" class="w-6 h-6"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-slate-800 tracking-tight">Berita<span class="text-indigo-600">Acara</span>.</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-all shadow-sm flex items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Buat Baru</span>
+                    </button>
+                    <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <!-- Stats/Dashboard Sederhana -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <p class="text-sm font-medium text-slate-500 mb-1">Total Berita Acara</p>
+                <p class="text-3xl font-bold text-slate-800">124</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <p class="text-sm font-medium text-slate-500 mb-1">Bulan Ini</p>
+                <p class="text-3xl font-bold text-indigo-600">18</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <p class="text-sm font-medium text-slate-500 mb-1">Butuh Review</p>
+                <p class="text-3xl font-bold text-amber-500">3</p>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div class="relative w-full sm:w-96">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                <input type="text" placeholder="Cari kegiatan, nomor, atau lokasi..." class="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all">
+            </div>
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-600 transition-all font-medium">
+                    <i data-lucide="filter" class="w-4 h-4"></i> Filter
+                </button>
+                <button class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-600 transition-all font-medium">
+                    <i data-lucide="download" class="w-4 h-4"></i> Export CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- Container Data -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <!-- Desktop Table -->
+            <table class="w-full text-left desktop-table">
+                <thead>
+                    <tr class="bg-slate-50/50 border-b border-slate-100">
+                        <th class="px-6 py-4 text-sm font-semibold text-slate-600">No. Berita Acara</th>
+                        <th class="px-6 py-4 text-sm font-semibold text-slate-600">Tanggal & Kegiatan</th>
+                        <th class="px-6 py-4 text-sm font-semibold text-slate-600">Lokasi</th>
+                        <th class="px-6 py-4 text-sm font-semibold text-slate-600">Status</th>
+                        <th class="px-6 py-4 text-sm font-semibold text-slate-600 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100" id="table-body">
+                    <!-- Data akan dirender via JS -->
+                </tbody>
+            </table>
+
+            <!-- Mobile Cards Container -->
+            <div class="mobile-cards divide-y divide-slate-100" id="mobile-body">
+                <!-- Data akan dirender via JS -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Data Dummy
+        const dataBeritaAcara = [
+            { id: "BA-2024-001", tanggal: "2024-04-20", jam: "09:00", kegiatan: "Serah Terima Inventaris Kantor", lokasi: "Ruang Rapat Utama", status: "Selesai", PIC: "Budi Santoso" },
+            { id: "BA-2024-002", tanggal: "2024-04-21", jam: "13:30", kegiatan: "Maintenance Server Tahunan", lokasi: "Data Center Lt. 3", status: "Selesai", PIC: "Siti Aminah" },
+            { id: "BA-2024-003", tanggal: "2024-04-22", jam: "10:00", kegiatan: "Koordinasi Tim Lapangan", lokasi: "Gedung B Lt. 2", status: "Review", PIC: "Andi Wijaya" },
+            { id: "BA-2024-004", tanggal: "2024-04-23", jam: "15:00", kegiatan: "Pengecekan Stok Logistik", lokasi: "Gudang Pusat", status: "Selesai", PIC: "Rina Sari" },
+            { id: "BA-2024-005", tanggal: "2024-04-24", jam: "08:30", kegiatan: "Briefing Pagi Karyawan", lokasi: "Aula Utama", status: "Selesai", PIC: "Herry Kurniawan" }
+        ];
+
+        // Render Data ke Table & Mobile Cards
+        const tableBody = document.getElementById('table-body');
+        const mobileBody = document.getElementById('mobile-body');
+
+        dataBeritaAcara.forEach(item => {
+            // Render Desktop Row
+            const row = document.createElement('tr');
+            row.className = "hover:bg-slate-50 transition-colors group";
+            row.innerHTML = `
+                <td class="px-6 py-4 text-sm font-medium text-slate-800">${item.id}</td>
+                <td class="px-6 py-4">
+                    <div class="text-sm font-semibold text-slate-800">${item.kegiatan}</div>
+                    <div class="text-xs text-slate-500">${item.tanggal} • ${item.jam}</div>
+                </td>
+                <td class="px-6 py-4 text-sm text-slate-600">${item.lokasi}</td>
+                <td class="px-6 py-4">
+                    <span class="px-2.5 py-1 text-xs font-semibold rounded-full ${item.status === 'Selesai' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">
+                        ${item.status}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <button onclick="generatePDF('${item.id}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-indigo-600 hover:text-white text-slate-600 rounded-lg transition-all text-xs font-medium">
+                        <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak PDF
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+
+            // Render Mobile Card
+            const card = document.createElement('div');
+            card.className = "p-4 space-y-3";
+            card.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div class="space-y-1">
+                        <div class="text-[10px] uppercase tracking-wider font-bold text-slate-400">${item.id}</div>
+                        <div class="text-base font-bold text-slate-800 leading-tight">${item.kegiatan}</div>
+                    </div>
+                    <span class="px-2.5 py-1 text-[10px] font-bold rounded-full ${item.status === 'Selesai' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}">
+                        ${item.status}
+                    </span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-sm text-slate-600">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i> ${item.tanggal}
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> ${item.lokasi}
+                    </div>
+                </div>
+                <div class="pt-2">
+                    <button onclick="generatePDF('${item.id}')" class="w-full flex items-center justify-center gap-2 py-2.5 bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white rounded-xl transition-all text-sm font-bold">
+                        <i data-lucide="printer" class="w-4 h-4"></i> Cetak Berita Acara (PDF)
+                    </button>
+                </div>
+            `;
+            mobileBody.appendChild(card);
+        });
+
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Fungsi Generate PDF
+        function generatePDF(id) {
+            const item = dataBeritaAcara.find(d => d.id === id);
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header Dokumen
+            doc.setFontSize(18);
+            doc.setTextColor(40, 40, 40);
+            doc.text("BERITA ACARA KEGIATAN", 105, 20, { align: "center" });
+            
+            doc.setFontSize(10);
+            doc.text("Nomor: " + item.id, 105, 27, { align: "center" });
+            
+            doc.line(20, 35, 190, 35); // Garis pemisah
+
+            // Isi Dokumen
+            doc.setFontSize(11);
+            doc.text("Pada hari ini, " + item.tanggal + ", telah dilaksanakan kegiatan sebagai berikut:", 20, 45);
+
+            const tableData = [
+                ["Nama Kegiatan", item.kegiatan],
+                ["Waktu", item.jam + " WIB"],
+                ["Lokasi", item.lokasi],
+                ["Penanggung Jawab", item.PIC],
+                ["Status", item.status]
+            ];
+
+            doc.autoTable({
+                startY: 50,
+                head: [['Atribut', 'Keterangan']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [79, 70, 229] }
+            });
+
+            const finalY = doc.lastAutoTable.finalY || 100;
+            
+            doc.text("Demikian Berita Acara ini dibuat untuk dipergunakan sebagaimana mestinya.", 20, finalY + 15);
+
+            // Tanda Tangan
+            doc.text("Jakarta, " + item.tanggal, 140, finalY + 40);
+            doc.text("Yang Membuat,", 140, finalY + 47);
+            doc.text("( ____________________ )", 140, finalY + 75);
+            doc.text(item.PIC, 140, finalY + 80);
+
+            // Save PDF
+            doc.save(`Berita_Acara_${id}.pdf`);
+            
+            // Notifikasi Sederhana
+            alert(`Berita Acara ${id} berhasil dikonversi ke PDF dan sedang didownload.`);
+        }
+    </script>
+</body>
+</html>
