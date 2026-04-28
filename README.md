@@ -18,12 +18,6 @@ Proyek ini menggunakan arsitektur **Decoupled Full-Stack**:
   - Menggunakan *Tailwind CSS* untuk styling premium dan responsif.
   - Menggunakan *Lucide React* untuk set ikon modern.
 
-## 📚 Best Practices Applied
-- **Clean Code**: Penamaan variabel yang deskriptif dan fungsi yang fokus pada satu tugas (Single Responsibility).
-- **Don't Repeat Yourself (DRY)**: Penggunaan komponen UI reusable untuk meminimalisir duplikasi kode (< 2%).
-- **Documentation**: Komentar lengkap pada setiap file penting sebagai panduan pengembangan.
-- **Layered Architecture**: Pemisahan yang jelas antara Database (Model), Logic (Service), dan Interface (Controller).
-
 ## 📂 Struktur Proyek
 ```text
 ├── backend-laravel/    # Source code mesin API (Laravel)
