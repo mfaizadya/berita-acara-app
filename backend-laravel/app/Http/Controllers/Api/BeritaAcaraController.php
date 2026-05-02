@@ -23,7 +23,7 @@ class BeritaAcaraController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $data = $this->service.getAllBeritaAcara($request->query('search'));
+        $data = $this->service->getAllBeritaAcara($request->query('search'));
         
         return BeritaAcaraResource::collection($data);
     }
@@ -43,7 +43,7 @@ class BeritaAcaraController extends Controller
             'pic_nama' => 'required|string',
         ]);
 
-        $beritaAcara = $this->service.create($validated);
+        $beritaAcara = $this->service->create($validated);
 
         return new BeritaAcaraResource($beritaAcara);
     }
